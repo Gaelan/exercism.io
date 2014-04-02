@@ -1,14 +1,13 @@
 require 'api/stats/submissions_sql'
 require 'api/stats/streak'
+require 'api/stats/streak_type'
 
 module Api
   module Stats
     module SubmissionStreak
-      def self.for(username, year, month)
-        user = User.find_by_username(username)
-        data = Api::Stats::SubmissionsSQL.new(user.id, year, month).execute
-        Api::Stats::Streak.new(Exercism::Config.languages, data, year, month).to_h
-      end
+      extend StreakType
+      private
+      SQL = SubmissionsSQL
     end
   end
 end
