@@ -1,14 +1,12 @@
 require 'api/stats/nitpicks_sql'
-require 'api/stats/streak'
+require 'api/stats/streak_type'
 
 module Api
   module Stats
     module NitStreak
-      def self.for(username, year, month)
-        user = User.find_by_username(username)
-        data = Api::Stats::NitpicksSQL.new(user.id, year, month).execute
-        Api::Stats::Streak.new(Exercism::Config.languages, data, year, month).to_h
-      end
+      extend StreakType
+      private
+      SQL = NitpicksSQL
     end
   end
 end
