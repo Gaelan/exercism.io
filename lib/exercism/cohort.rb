@@ -13,11 +13,11 @@ class Cohort
   end
 
   def members
-    @members ||= compute_members
+    @members ||= compute :members
   end
 
   def managers
-    @managers ||= compute_managers
+    @managers ||= compute :managers
   end
 
   def sees(exercise)
@@ -32,20 +32,11 @@ class Cohort
     member.completed?(exercise) || member.working_on?(exercise)
   end
 
-  def compute_members
-    members = Set.new
+  def compute(type)
+    result = Set.new
     user.teams.each do |team|
-      members += team.members
+      result += team.send type
     end
-    members.delete user
+    result.delete user
   end
-
-  def compute_managers
-    managers = Set.new
-    user.teams.each do |team|
-      managers += team.managers
-    end
-    managers.delete user
-  end
-
 end
