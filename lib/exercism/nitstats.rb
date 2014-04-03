@@ -20,21 +20,21 @@ class Nitstats
   end
 
   def given
-    sql = "select date(c.created_at) as date, count(1) as count
-           from comments c, submissions s
-           where c.user_id = #{user.id}
-           and c.submission_id = s.id
-           and s.user_id != #{user.id}
-           group by date(c.created_at) order by date(c.created_at)"
-    extract_stat Submission.connection.execute(sql)
+    nitpicks(given: true, recieved: false)
   end
 
   def received
+    nitpicks(given: false, recieved: true)
+  end
+
+  def nitpicks(given:, recieved:)
+    given_condition = given ? "=" : "!="
+    recieved_condition = recieved ? "=" : "!="
     sql = "select date(c.created_at) as date, count(1) as count
            from comments c, submissions s
-           where c.user_id != #{user.id}
+           where c.user_id #{given_condition} #{user.id}
            and c.submission_id = s.id
-           and s.user_id = #{user.id}
+           and s.user_id #{recieved_condition} #{user.id}
            group by date(c.created_at) order by date(c.created_at)"
     extract_stat Submission.connection.execute(sql)
   end
