@@ -10,15 +10,11 @@ module Api
       end
 
       def most_recent_submission_at
-        sql = "SELECT created_at FROM submissions WHERE user_id = #{user.id} ORDER BY created_at DESC LIMIT 1"
-        result = execute(sql)
-        time_of result["created_at"] if result
+        most_recent :submissions
       end
 
       def most_recent_nitpick_at
-        sql = "SELECT created_at FROM comments WHERE user_id = #{user.id} ORDER BY created_at DESC LIMIT 1"
-        result = execute(sql)
-        time_of result["created_at"] if result
+        most_recent :comments
       end
 
       def active_exercise_count
@@ -76,6 +72,12 @@ module Api
 
       def time_of(timestamp)
         Time.strptime(timestamp.gsub(/\.\d+$/, '') + " UTC", "%Y-%m-%d %H:%M:%S %Z")
+      end
+
+      def most_recent(table)
+        sql = "SELECT created_at FROM #{table} WHERE user_id = #{user.id} ORDER BY created_at DESC LIMIT 1"
+        result = execute(sql)
+        time_of result["created_at"] if result
       end
     end
   end
